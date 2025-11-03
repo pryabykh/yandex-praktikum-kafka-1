@@ -1,0 +1,46 @@
+package com.pryabykh.yandex_praktikum_kafka_1.configuration;
+
+import com.pryabykh.yandex_praktikum_kafka_1.consumer.SingleMessageConsumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.Properties;
+
+import static com.pryabykh.yandex_praktikum_kafka_1.constant.KafkaConstants.BOOTSTRAP_SERVERS;
+import static com.pryabykh.yandex_praktikum_kafka_1.constant.KafkaConstants.TOPIC_NAME;
+
+@Component
+public class KafkaConsumerRunnerConfiguration implements CommandLineRunner {
+    private static final Logger log = LoggerFactory.getLogger(KafkaConsumerRunnerConfiguration.class);
+    @Autowired
+    private SingleMessageConsumer singleMessageConsumer;
+
+    @Override
+    public void run(String... args) {
+        runSingleMessageConsumer();
+    }
+
+    private void runSingleMessageConsumer() {
+        log.info("Запуск консьюмера: {}", SingleMessageConsumer.class.getName());
+        Properties props = new Properties();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "SingleMessageConsumer");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "6000");
+        props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, "1000");
+        props.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, "200");
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+        consumer.subscribe(Collections.singletonList(TOPIC_NAME));
+
+        singleMessageConsumer.startConsuming(consumer);
+    }
+}
