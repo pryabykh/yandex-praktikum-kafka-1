@@ -1,5 +1,7 @@
 package com.pryabykh.yandex_praktikum_kafka_1.producer;
 
+import com.pryabykh.yandex_praktikum_kafka_1.dto.WeatherMessageDto;
+import com.pryabykh.yandex_praktikum_kafka_1.mapper.WeatherMessageHelper;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -8,6 +10,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +24,8 @@ import static com.pryabykh.yandex_praktikum_kafka_1.constant.KafkaConstants.TOPI
 @Component
 public class ProducerComponent {
     private static final Logger log = LoggerFactory.getLogger(ProducerComponent.class);
+    @Autowired
+    private WeatherMessageHelper weatherMessageHelper;
     private KafkaProducer producer;
 
     @PostConstruct
@@ -36,12 +41,14 @@ public class ProducerComponent {
 
     @Scheduled(cron = "* * * * * *")
     public void produce() {
+        String randomWeather = createRandomWeather();
         ProducerRecord<String, String> record = new ProducerRecord<>(
                 TOPIC_NAME,
                 UUID.randomUUID().toString(),
-                createRandomWeather()
+                randomWeather
         );
         producer.send(record);
+        log.info("Сообщение {} отправлено", randomWeather);
     }
 
     @PreDestroy
@@ -53,6 +60,7 @@ public class ProducerComponent {
     private String createRandomWeather() {
         Random random = new Random();
         double temperature = -40.0 + (50.0 - (-40.0)) * random.nextDouble();
-        return String.valueOf(Math.round(temperature * 10.0) / 10.0);
+        WeatherMessageDto weatherMessageDto = new WeatherMessageDto(Math.round(temperature * 10.0) / 10.0);
+        return weatherMessageHelper.serialize(weatherMessageDto);
     }
 }
