@@ -16,10 +16,13 @@ public class KafkaConsumerRunner {
     private static final Logger log = LoggerFactory.getLogger(KafkaConsumerRunner.class);
 
     @Async
-    public <T> void startConsuming(KafkaConsumer<String, String> consumer, Class<T> source, boolean manualCommit) {
+    public <T> void startConsuming(KafkaConsumer<String, String> consumer,
+                                   long pollTimeout,
+                                   Class<T> source,
+                                   boolean manualCommit) {
         log.info("Запуск консьюмера: {}", source.getName());
         while (true) {
-            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(200));
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(pollTimeout));
             for (ConsumerRecord<String, String> record : records) {
                 try {
                     log.info(
@@ -33,7 +36,7 @@ public class KafkaConsumerRunner {
                 }
             }
             if (manualCommit && records.count() > 0) {
-                log.info("Коммит пачки {}", records.count());
+                log.info("Ручной коммит пачки {}", records.count());
                 consumer.commitSync();
             }
         }

@@ -33,12 +33,12 @@ public class BatchMessageConsumer implements CommandLineRunner {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "6000");
-        props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, "10000");
+        props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, "1024");
         props.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, "10000");
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "10");
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList(TOPIC_NAME));
 
-        kafkaConsumerRunner.startConsuming(consumer, BatchMessageConsumer.class, true);
+        kafkaConsumerRunner.startConsuming(consumer, 10000, BatchMessageConsumer.class, true);
     }
 }
