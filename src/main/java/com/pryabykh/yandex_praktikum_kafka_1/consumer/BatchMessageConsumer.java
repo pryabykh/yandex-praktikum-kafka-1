@@ -5,13 +5,13 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Properties;
 
-import static com.pryabykh.yandex_praktikum_kafka_1.constant.KafkaConstants.BOOTSTRAP_SERVERS;
 import static com.pryabykh.yandex_praktikum_kafka_1.constant.KafkaConstants.TOPIC_NAME;
 
 @Component
@@ -19,6 +19,8 @@ public class BatchMessageConsumer implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(BatchMessageConsumer.class);
     @Autowired
     private KafkaConsumerRunner kafkaConsumerRunner;
+    @Value("${bootstrap.servers}")
+    private String bootstrapServers;
 
     @Override
     public void run(String... args) {
@@ -27,7 +29,7 @@ public class BatchMessageConsumer implements CommandLineRunner {
 
     private void runSingleMessageConsumer() {
         Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "BatchMessageConsumer");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
