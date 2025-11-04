@@ -41,6 +41,6 @@ public class SingleMessageConsumer implements CommandLineRunner {
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList(TOPIC_NAME));
 
-        kafkaConsumerRunner.startConsuming(consumer, 200, SingleMessageConsumer.class, false);
+        kafkaConsumerRunner.startConsuming(consumer, SingleMessageConsumer.class, false);
     }
 }

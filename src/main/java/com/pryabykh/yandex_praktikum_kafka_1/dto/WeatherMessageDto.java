@@ -2,7 +2,7 @@ package com.pryabykh.yandex_praktikum_kafka_1.dto;
 
 public class WeatherMessageDto {
 
-    private double value;
+    private double value = 1.0;
 
     public WeatherMessageDto() {
     }

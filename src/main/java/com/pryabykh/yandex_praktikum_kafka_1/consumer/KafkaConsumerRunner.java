@@ -22,12 +22,11 @@ public class KafkaConsumerRunner {
 
     @Async
     public <T> void startConsuming(KafkaConsumer<String, String> consumer,
-                                   long pollTimeout,
                                    Class<T> source,
                                    boolean manualCommit) {
         log.info("Запуск консьюмера: {}", source.getName());
         while (true) {
-            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(pollTimeout));
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(200));
             for (ConsumerRecord<String, String> record : records) {
                 try {
                     WeatherMessageDto weatherDto = weatherMessageHelper.deserialize(record.value());

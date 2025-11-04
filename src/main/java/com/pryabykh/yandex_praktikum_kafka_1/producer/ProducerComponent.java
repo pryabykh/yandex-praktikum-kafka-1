@@ -16,7 +16,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Properties;
-import java.util.Random;
 import java.util.UUID;
 
 import static com.pryabykh.yandex_praktikum_kafka_1.constant.KafkaConstants.TOPIC_NAME;
@@ -43,7 +42,7 @@ public class ProducerComponent {
 
     @Scheduled(cron = "* * * * * *")
     public void produce() {
-        String randomWeather = createRandomWeather();
+        String randomWeather = weatherMessageHelper.serialize(new WeatherMessageDto());
         ProducerRecord<String, String> record = new ProducerRecord<>(
                 TOPIC_NAME,
                 UUID.randomUUID().toString(),
@@ -57,12 +56,5 @@ public class ProducerComponent {
     void closeProducer() {
         log.info("Закрываем продьюсера");
         producer.close();
-    }
-
-    private String createRandomWeather() {
-        Random random = new Random();
-        double temperature = -40.0 + (50.0 - (-40.0)) * random.nextDouble();
-        WeatherMessageDto weatherMessageDto = new WeatherMessageDto(Math.round(temperature * 10.0) / 10.0);
-        return weatherMessageHelper.serialize(weatherMessageDto);
     }
 }
