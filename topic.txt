@@ -1,0 +1,5 @@
+Команда создания топика (можно воспользоваться, но приложение само автоматически создаст топик при запуске)
+kafka-topics.sh --create --topic current_weather --partitions 3 --replication-factor 2 --bootstrap-server localhost:29092
+
+Вывести подробную информацию о топике
+kafka-topics.sh --describe --topic current_weather --bootstrap-server localhost:29092
