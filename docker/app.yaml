@@ -61,14 +61,12 @@ services:
       - "29094:29094"
     networks:
       - kafka-network
-  app:
+  app-replica-1:
     image: 'kafka-app:latest'
+    container_name: app-replica-1
     build:
       context: ../
-    container_name: kafka-app
     restart: on-failure:5
-#    deploy:
-#      replicas: 2
     depends_on:
       - zookeeper
       - kafka1
@@ -76,8 +74,27 @@ services:
       - kafka3
     environment:
       BOOTSTRAP_SERVERS: kafka1:9092,kafka2:9093,kafka3:9094
+      SERVER_PORT: 8080
     ports:
       - "8080:8080"
+    networks:
+      - kafka-network
+  app-replica-2:
+    image: 'kafka-app:latest'
+    container_name: app-replica-2
+    build:
+      context: ../
+    restart: on-failure:5
+    depends_on:
+      - zookeeper
+      - kafka1
+      - kafka2
+      - kafka3
+    environment:
+      BOOTSTRAP_SERVERS: kafka1:9092,kafka2:9093,kafka3:9094
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
     networks:
       - kafka-network
 networks:
