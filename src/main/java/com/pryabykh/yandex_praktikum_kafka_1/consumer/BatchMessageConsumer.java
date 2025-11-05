@@ -29,13 +29,20 @@ public class BatchMessageConsumer implements CommandLineRunner {
 
     private void runSingleMessageConsumer() {
         Properties props = new Properties();
+        // подключаемся к брокеру
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        // устанавливаем уникальный идентификатор группы
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "BatchMessageConsumer");
+        // сериализация строковая
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        // коммитить будем вручную
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+        // время, в течение которого консьюмер может не слать признаки жизни брокеру
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "6000");
+        // минимальное количество байтов, которое ожидаем получить от брокера
         props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, "1100");
+        // время, в течение которого брокер будет ждать накопления минимального количества байтов (если время вышло, то шлет, что есть)
         props.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, "999999999");
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList(TOPIC_NAME));

@@ -32,9 +32,13 @@ public class ProducerComponent {
     @PostConstruct
     void initProducer() {
         Properties properties = new Properties();
+        // подключаемся к брокеру
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        // при отправке сообщения ожидаем подтверждения всех брокеров
         properties.put(ProducerConfig.ACKS_CONFIG, "all");
+        // при неудаче повторяем 3 раза
         properties.put(ProducerConfig.RETRIES_CONFIG, 3);
+        // сериализация строковая
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         this.producer = new KafkaProducer<>(properties);

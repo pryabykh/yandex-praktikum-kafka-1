@@ -29,14 +29,22 @@ public class SingleMessageConsumer implements CommandLineRunner {
 
     private void runSingleMessageConsumer() {
         Properties props = new Properties();
+        // подключаемся к брокеру
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        // устанавливаем уникальный идентификатор группы
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "SingleMessageConsumer");
+        // сериализация строковая
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        // коммитит будет автоматический (кафка клиент коммитит по расписанию, указанному в auto.commit.interval.ms)
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
+        // время, в течение которого консьюмер может не слать признаки жизни брокеру
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "6000");
-        props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, "1000");
+        // минимальное количество байтов, которое ожидаем получить от брокера
+        props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, "110");
+        // время, в течение которого брокер будет ждать накопления минимального количества байтов (если время вышло, то шлет, что есть)
         props.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, "200");
+        // говорим, что в records хотим всегда видеть одно сообщение (даже если фактически poll получил больше одного)
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList(TOPIC_NAME));
